@@ -571,7 +571,6 @@
 				</div>
 			{:else if questions.length > 0 && currentQuestion}
 				<div class="progress-header">
-					<span id="pergunta-atual">Pergunta {currentQuestionIndex + 1} de {questions.length}</span>
 					<span id="porcentagem-completa">{Math.round(quizProgress)}% completo</span>
 				</div>
 				<div class="progress-bar-container">
@@ -579,7 +578,6 @@
 				</div>
 
 				<div class="quiz-card">
-					<span class="quiz-badge" id="quiz-badge">{currentQuestion.badge || 'Pergunta'}</span>
 					<h2 id="question-text">{currentQuestion.text || 'Carregando...'}</h2>
 
 					<div class="options-container" id="options-container">

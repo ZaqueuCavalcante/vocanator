@@ -11,6 +11,10 @@ public class GetVocationalTestService(VocanatorDbContext ctx) : IAppService
 
         if (vocationalTest == null) return new();
 
+        var user = await ctx.Users.AsNoTracking()
+            .Where(x => x.Id == vocationalTest.UserId)
+            .FirstAsync();
+
         var areas = await ctx.KnowledgeAreas.AsNoTracking().ToListAsync();
 
         var hanking = vocationalTest.Results
@@ -22,6 +26,8 @@ public class GetVocationalTestService(VocanatorDbContext ctx) : IAppService
 
         return new GetVocationalTestOut
         {
+            Name = user.Name,
+            Email = user.Email,
             Hanking = hanking,
         };
     }

@@ -2,30 +2,93 @@
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { onMount } from 'svelte';
 
+	// --- ESTADO GLOBAL DA PÁGINA ---
 	let pageState = $state<'home' | 'quiz' | 'perfil'>('home');
 	let modalVisible = $state(true);
 
+	// --- DADOS DO USUÁRIO ---
 	let user = $state({ name: '', email: '' });
 	let userNameInput = $state('');
 	let userEmailInput = $state('');
 
-
+	// --- DADOS DA API (APENAS ÁREAS) ---
 	let areas = $state<any[]>([]);
-	let questions = $state<any[]>([]);
 
+	// --- DADOS ESTÁTICOS DO QUIZ ---
+	const quizQuestions = [
+		{
+			text: 'Você gosta de resolver quebra-cabeças ou problemas lógicos?',
+			badge: 'Interesses',
+			intelligence: 'logico'
+		},
+		{
+			text: 'Você se sente à vontade apresentando ideias para um grupo?',
+			badge: 'Comportamento',
+			intelligence: 'linguistico'
+		},
+		{
+			text: 'Você prefere garantir que todos no grupo estejam felizes e trabalhando juntos?',
+			badge: 'Comportamento',
+			intelligence: 'interpessoal'
+		},
+		{
+			text: 'Você gosta de construir protótipos ou modelos físicos?',
+			badge: 'Comportamento',
+			intelligence: 'corporal'
+		},
+		{
+			text: 'Um laboratório de pesquisa silencioso parece um bom lugar para trabalhar?',
+			badge: 'Ambiente',
+			intelligence: 'intrapessoal'
+		},
+		{
+			text: 'Você se sente atraído por design, arquitetura e artes visuais?',
+			badge: 'Ambiente',
+			intelligence: 'espacial'
+		},
+		{
+			text: 'Você prefere trabalhar ao ar livre, em contato com a natureza?',
+			badge: 'Ambiente',
+			intelligence: 'naturalista'
+		},
+		{
+			text: 'Você consegue perceber facilmente se uma nota musical está desafinada?',
+			badge: 'Habilidade',
+			intelligence: 'musical'
+		},
+		{
+			text: 'Você aprende melhor lendo e escrevendo anotações?',
+			badge: 'Aprendizado',
+			intelligence: 'linguistico'
+		},
+		{
+			text: 'Você aprende melhor "colocando a mão na massa" e fazendo na prática?',
+			badge: 'Aprendizado',
+			intelligence: 'corporal'
+		}
+	];
+	
+	// --- OPÇÕES ATUALIZADAS PARA SIM/NÃO ---
+	const quizOptions = [
+		{ texto: 'Sim', valor: 5 }, // Pontuação alta para "Sim"
+		{ texto: 'Não', valor: 1 }  // Pontuação baixa para "Não"
+	];
+
+	// --- ESTADO DO QUIZ ---
+	let questions = $state(quizQuestions);
 	let currentQuestionIndex = $state(0);
-	let answers = $state<Record<number, string>>({});
+	let answers = $state<Record<number, number>>({}); // Armazena a pontuação (5 ou 1)
 	let isLoadingProfile = $state(false);
 	let profileData = $state<any>(null);
 
-
+	// --- DADOS COMPUTADOS (DERIVED) ---
 	let currentQuestion = $derived(questions[currentQuestionIndex]);
 	let currentAnswer = $derived(answers[currentQuestionIndex]);
 	let quizProgress = $derived(
 		questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
 	);
 
-	
+	// --- MAPA LOCAL PARA COMPLEMENTAR DADOS DA API ---
 	const areaDetailsMap: Record<string, { icon: string; description: string }> = {
 		'Lógico-matemática': {
 			icon: 'fas fa-calculator',
@@ -61,7 +124,7 @@
 		}
 	};
 
-
+	// --- CARREGAMENTO DE DADOS ---
 	async function loadData() {
 		try {
 			const resAreas = await fetch(`${PUBLIC_API_URL}/knowledge-areas`);
@@ -72,11 +135,6 @@
 					...areaDetailsMap[area.name]
 				}));
 			}
-
-			const resQuestions = await fetch(`${PUBLIC_API_URL}/questions`);
-			if (resQuestions.ok) {
-				questions = await resQuestions.json();
-			}
 		} catch (error) {
 			console.error('Falha ao carregar dados:', error);
 		}
@@ -84,17 +142,9 @@
 
 	onMount(loadData);
 
-	
+	// --- NAVEGAÇÃO E AÇÕES ---
 	async function handleRegistration() {
-		// TODO: Implementar chamada real ao backend para registrar
-		// const res = await fetch(`${PUBLIC_API_URL}/register`, {
-		//     method: 'POST',
-		//     headers: { 'Content-Type': 'application/json' },
-		//     body: JSON.stringify({ name: userNameInput, email: userEmailInput })
-		// });
-		// if (!res.ok) { alert("Erro ao cadastrar!"); return; }
-
-		// Simulação
+		// TODO: Implementar chamada de API de registro
 		user.name = userNameInput;
 		user.email = userEmailInput;
 		modalVisible = false;
@@ -106,7 +156,7 @@
 		answers = {};
 	}
 
-	function selectAnswer(value: string) {
+	function selectAnswer(value: number) {
 		answers[currentQuestionIndex] = value;
 	}
 
@@ -128,18 +178,21 @@
 		isLoadingProfile = true;
 		pageState = 'perfil';
 
-		// TODO: Implementar chamada real ao backend com as respostas
-		// const res = await fetch(`${PUBLIC_API_URL}/quiz-result`, {
+		const quizPayload = questions.map((question, index) => ({
+			question: question.text,
+			intelligence: question.intelligence,
+			score: answers[index] || 1 // Envia a pontuação (5 ou 1)
+		}));
+
+		console.log('Enviando para o backend:', quizPayload);
+
+		// TODO: Implementar chamada real ao backend com o 'quizPayload'
+		// const res = await fetch(`${PUBLIC_API_URL}/api/analyze-quiz`, {
 		//     method: 'POST',
 		//     headers: { 'Content-Type': 'application/json' },
-		//     body: JSON.stringify(answers)
+		//     body: JSON.stringify(quizPayload)
 		// });
-		// if (!res.ok) {
-		//     alert("Erro ao buscar resultados!");
-		//     isLoadingProfile = false;
-		//     pageState = 'quiz';
-		//     return;
-		// }
+		// if (!res.ok) { ... }
 		// profileData = await res.json();
 
 		// Simulação de delay de rede
@@ -173,11 +226,9 @@
 				]
 			};
 			isLoadingProfile = false;
-		}, 2000); 
+		}, 2000);
 	}
 </script>
-
-//A partir deste ponto está todo o css utilizado nas páginas
 
 <style>
 	* {
@@ -265,7 +316,6 @@
 		color: #555;
 		border: 1px solid #ddd;
 	}
-
 
 	.modal-overlay {
 		position: fixed;
@@ -888,18 +938,14 @@
 	}
 </style>
 
-//Aqui se encerra o css da página
-
-//A partir daqui é feito a navegação entre todas as páginas,seguindo um modelo de if/else para identifcar a página e progresso que o usuáriio se encotra
-
-{#if pageState === 'home'} //Aqui é o inicio da página home,que possui um modal de cadastro,que após ser feito some da tela
+{#if pageState === 'home'}
 	{#if modalVisible}
 		<div class="modal-overlay" id="modal-cadastro">
 			<div class="modal-content">
 				<h2>Bem-vindo!</h2>
 				<p>Cadastre-se para descobrir sua vocação e salvar seu progresso.</p>
 				<form on:submit|preventDefault={handleRegistration}>
-					<div class="form-grupo"> //Aqui se inicia o modal de cadastro
+					<div class="form-grupo">
 						<label for="nome">Seu Nome</label>
 						<input
 							type="text"
@@ -922,10 +968,10 @@
 					<button type="submit" class="btn btn-principal">Cadastrar e Iniciar</button>
 				</form>
 			</div>
-		</div> //Aqui termina a tela home e o modal de casdastro
+		</div>
 	{/if}
 
-	<div id="pagina-principal"> //Aqui começa a página principal,que é dividida em seções
+	<div id="pagina-principal">
 		<header class="navbar">
 			<a href="#" class="logo">Vocanator</a>
 			<a href="#" class="perfil-link" id="perfil-link">
@@ -951,7 +997,7 @@
 				</button>
 			</section>
 
-			<section class="como-funciona-section"> //Aqui é a seção de "como funciona" 
+			<section class="como-funciona-section">
 				<h2>Como funciona</h2>
 				<p class="section-subtitle">Três passos simples para descobrir sua vocação profissional</p>
 				<div class="passos-container">
@@ -982,7 +1028,7 @@
 				</div>
 			</section>
 
-			<section class="inteligencias-section"> //Aqui é a seção de inteligências múltiplas
+			<section class="inteligencias-section">
 				<h2>Teoria das Inteligências Múltiplas</h2>
 				<p class="section-subtitle">
 					Desenvolvida por Howard Gardner, a teoria das Inteligências Múltiplas revolucionou nossa
@@ -1005,7 +1051,7 @@
 			</section>
 		</main>
 
-		<footer class="footer"> //Aqui se incia o nosso footer
+		<footer class="footer">
 			<div class="footer-container">
 				<div class="footer-col">
 					<h6>Vocanator</h6>
@@ -1027,9 +1073,9 @@
 				</div>
 			</div>
 			<div class="copyright">© 2025 Vocanator. Todos os direitos reservados.</div>
-		</footer> //Aqui termina o footer
+		</footer>
 	</div>
-	{:else if pageState === 'quiz'} //Aqui se incia a tela do quiz
+	{:else if pageState === 'quiz'}
 	<div class="quiz-page-container">
 		<div class="quiz-container" id="quiz-container">
 			{#if questions.length > 0 && currentQuestion}
@@ -1043,10 +1089,10 @@
 
 				<div class="quiz-card">
 					<span class="quiz-badge" id="quiz-badge">{currentQuestion.badge || 'Pergunta'}</span>
-					<h2 id="question-text">{currentQuestion.pergunta || currentQuestion.text}</h2>
+					<h2 id="question-text">{currentQuestion.text}</h2>
 
 					<div class="options-container" id="options-container">
-						{#each currentQuestion.opcoes as option}
+						{#each quizOptions as option}
 							<label
 								class="option-card"
 								class:selected={currentAnswer === option.valor}
@@ -1057,15 +1103,15 @@
 								<span class="option-text">{option.texto}</span>
 							</label>
 						{/each}
-					</div> //Aqui finaliza a tela do quiz
+					</div>
 
-					<div class="navigation-buttons"> //A partir daqui temos os botões de navegção do quiz
+					<div class="navigation-buttons">
 						<button
 							class="btn btn-outline"
 							id="btn-anterior"
 							on:click={handleQuizPrevious}
 							disabled={currentQuestionIndex === 0}
-						> //Este botão retorna para a pergunta anterior
+						>
 							<i class="fas fa-arrow-left"></i>
 							Anterior
 						</button>
@@ -1074,7 +1120,7 @@
 							id="btn-proxima"
 							on:click={handleQuizNext}
 							disabled={!currentAnswer}
-						> //Este botão avança para a próxima pergunta ou finaliza o quiz
+						>
 							{#if currentQuestionIndex === questions.length - 1}
 								Finalizar
 								<i class="fas fa-check"></i>
@@ -1086,7 +1132,7 @@
 					</div>
 				</div>
 
-				<div class="dica-box"> //Aqui temos uma dica que é exibida para o usuário
+				<div class="dica-box">
 					<strong>Dica:</strong> Responda com sinceridade! Não há respostas certas ou erradas. O
 					objetivo é descobrir o que realmente combina com você.
 				</div>
@@ -1098,7 +1144,7 @@
 			{/if}
 		</div>
 	</div>
-	{:else if pageState === 'perfil'} //Aqui se inicia a tela de perfil
+	{:else if pageState === 'perfil'}
 	<div class="perfil-page-container">
 		{#if isLoadingProfile}
 			<div class="loading-container">
@@ -1114,10 +1160,10 @@
 						<h2>{user.name || 'João da Silva'}</h2>
 						<p>{user.email || 'joao.silva@email.com'}</p>
 					</div>
-				</div> //Aqui se finaliza a tela de perfil
+				</div>
 			</header>
 
-			<div class="cards-meio"> //Aqui temos o que é exibido para o usuário após concluir o quiz
+			<div class="cards-meio">
 				<section class="perfil-card">
 					<div class="card-header">
 						<i class="fas fa-user-check icon"></i>

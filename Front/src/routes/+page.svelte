@@ -33,7 +33,9 @@
 	let currentQuestion = $derived(questions[currentQuestionIndex]);
 	let currentAnswer = $derived(answers[currentQuestionIndex]);
 	let quizProgress = $derived(
-		questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
+		questions.length > 0
+			? (currentQuestionIndex / questions.length) * 100 // usa apenas o índice atual
+			: 0
 	);
 
 	let showPlusOne = $state(false); // controla o "+1"
@@ -668,7 +670,9 @@
 				<div class="progress-bar-container">
 					<div class="progress-bar-track">
 						<div class="progress-bar-fill" style="width: {quizProgress}%;">
-						<span class="progress-percentage">{Math.round(quizProgress)}%</span>
+						<span class="progress-percentage" style="opacity: {quizProgress < 5 ? 0 : 1}">
+							{Math.round(quizProgress)}%
+						</span>
 						</div>
 					</div>
 

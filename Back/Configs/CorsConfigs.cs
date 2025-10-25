@@ -11,7 +11,7 @@ public static class CorsConfigs
                 .AllowCredentials()
                 .WithOrigins(
                     "http://localhost:5173",
-                    "https://vocanatorapi.up.railway.app"
+                    "https://vocanator.up.railway.app"
                 )
             )
         );

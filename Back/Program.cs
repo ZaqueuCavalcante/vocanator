@@ -13,11 +13,11 @@ builder.AddCorsConfigs();
 
 var app = builder.Build();
 
-
 var ctx = app.Services.CreateScope().ServiceProvider.GetRequiredService<VocanatorDbContext>();
 ctx.Database.EnsureDeleted();
 ctx.Database.EnsureCreated();
 
+DbSeeder.Seed(ctx);
 
 app.UseCors();
 
@@ -29,5 +29,3 @@ app.UseDocs();
 app.UseControllers();
 
 app.Run();
-
-public partial class Program { }

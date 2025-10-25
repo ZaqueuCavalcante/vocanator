@@ -6,6 +6,7 @@ namespace Vocanator.Back.Database;
 public class VocanatorDbContext(DbContextOptions<VocanatorDbContext> options, NpgsqlDataSource npgsqlDataSource) : DbContext(options)
 {
     public DbSet<AppUser> Users { get; set; }
+    public DbSet<KnowledgeArea> KnowledgeAreas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

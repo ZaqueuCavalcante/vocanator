@@ -10,5 +10,7 @@ public class AppUserDbConfig : IEntityTypeConfiguration<AppUser>
 
         entity.HasKey(e => e.Id);
         entity.Property(e => e.Id).ValueGeneratedNever();
+
+        entity.Property(x => x.CreatedAt).HasColumnType("timestamp");
     }
 }

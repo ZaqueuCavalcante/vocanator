@@ -10,8 +10,8 @@ public static class CorsConfigs
                 .AllowAnyHeader()
                 .AllowCredentials()
                 .WithOrigins(
-                    "http://localhost:5002",
-                    "https://vocanator.com.br"
+                    "http://localhost:5173",
+                    "https://vocanatorapi.up.railway.app"
                 )
             )
         );

@@ -20,8 +20,6 @@ body {
 }
 
 body {
-	display: grid;
-	place-content: center;
 	padding: 2rem;
 	font-family: 'Poppins', sans-serif;
 	color: var(--txt-1);

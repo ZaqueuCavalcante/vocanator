@@ -36,6 +36,21 @@
 		questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
 	);
 
+	let showPlusOne = $state(false); // controla o "+1"
+	let plusOneStyle = $state({ top: '0px', left: '0px' }); // posição dinâmica
+
+	function triggerPlusOne(event: MouseEvent) {
+		plusOneStyle = {
+			top: `${event.clientY - 20}px`,
+			left: `${event.clientX}px`
+		};
+		showPlusOne = true;
+
+		setTimeout(() => {
+			showPlusOne = false;
+		}, 800); // duração da animação
+	}
+
 	// --- DADOS ESTÁTICOS PARA INTELIGÊNCIAS (HOME) - AGORA OFFLINE ---
 	const staticInteligencias = [
 		{
@@ -159,6 +174,9 @@
 		if (answers[currentQuestionIndex] === undefined) {
 			return; // Não permite avançar sem resposta
 		}
+
+		triggerPlusOne(event);
+
 		if (currentQuestionIndex < questions.length - 1) {
 			currentQuestionIndex++;
 		} else {
@@ -285,6 +303,22 @@
 	.hero-badge i { margin-right: 6px; }
 	.hero-section h1 { font-size: 2.8em; font-weight: 700; color: #222; max-width: 650px; margin: 0 auto 20px auto; line-height: 1.2; }
 	.hero-section p { font-size: 1.1em; color: #555; max-width: 600px; margin: 0 auto 35px auto; }
+
+	.plus-one {
+		position: fixed;
+		color: #ff3e3e;
+		font-size: 1.5em;
+		font-weight: bold;
+		pointer-events: none;
+		animation: floatUp 0.8s ease-out forwards;
+		z-index: 10000;
+	}
+
+	@keyframes floatUp {
+		0% { transform: translateY(0) scale(1); opacity: 1; }
+		50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+		100% { transform: translateY(-60px) scale(1); opacity: 0; }
+	}
 
 	/* --- Como Funciona Section --- */
 	.como-funciona-section { padding: 60px 20px; background-color: #f9f9f9; }
@@ -564,6 +598,12 @@
 	{:else if pageState === 'quiz'}
 	<div class="quiz-page-container">
 		<div class="quiz-container" id="quiz-container">
+
+
+{#if showPlusOne}
+    <div class="plus-one" style="top: {plusOneStyle.top}; left: {plusOneStyle.left};">+1</div>
+{/if}
+
 			{#if questions.length === 0 && isLoadingData}
 				<div class="loading-container">
 					<div class="spinner"></div>

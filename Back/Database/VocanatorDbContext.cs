@@ -9,6 +9,7 @@ public class VocanatorDbContext(DbContextOptions<VocanatorDbContext> options, Np
     public DbSet<KnowledgeArea> KnowledgeAreas { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<QuestionKnowledgeAreaWeight> Weights { get; set; }
+    public DbSet<VocationalTest> VocationalTests { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

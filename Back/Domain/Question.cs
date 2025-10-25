@@ -7,8 +7,9 @@ public class Question
 
     public Question() { }
 
-    public Question(string text)
+    public Question(int id, string text)
     {
+        Id = id;
         Text = text;
     }
 }

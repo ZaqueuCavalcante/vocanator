@@ -2,14 +2,14 @@ namespace Vocanator.Back.Domain;
 
 public class KnowledgeArea
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; }
 
     public KnowledgeArea() { }
 
-    public KnowledgeArea(string name)
+    public KnowledgeArea(int id, string name)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
     }
 }

@@ -9,6 +9,6 @@ public class QuestionDbConfig : IEntityTypeConfiguration<Question>
         entity.ToTable("questions");
 
         entity.HasKey(e => e.Id);
-        entity.Property(e => e.Id).UseIdentityColumn();
+        entity.Property(e => e.Id).ValueGeneratedNever();
     }
 }

@@ -444,7 +444,7 @@
 		<div class="modal-overlay" id="modal-cadastro">
 			<div class="modal-content">
 				<h2>Bem-vindo!</h2>
-				<p>Cadastre-se para descobrir sua vocação e salvar seu progresso.</p>
+				<p>Cadastre-se para descobrir quais áreas do conhecimento combinam com você.</p>
 				<form on:submit|preventDefault={handleRegistration}>
 					<div class="form-grupo">
 						<label for="nome">Seu Nome</label>
@@ -481,11 +481,7 @@
 
 		<main>
 			<section class="hero-section">
-				<span class="hero-badge">
-					<i class="fas fa-atom"></i>
-					Descubra seu futuro profissional
-				</span>
-				<h1>Descubra sua verdadeira vocação e encontre a carreira que combina com você</h1>
+				<h1>Descubra quais áreas do conhecimento combinam com você</h1>
 				<p>
 					Use inteligência artificial e testes gamificados para descobrir suas habilidades, interesses e
 					o caminho profissional perfeito para você.
@@ -498,30 +494,22 @@
 
 			<section class="como-funciona-section">
 				<h2>Como funciona</h2>
-				<p class="section-subtitle">Três passos simples para descobrir sua vocação profissional</p>
+				<p class="section-subtitle">Dois passos simples para descobrir suas áreas de interesse</p>
 				<div class="passos-container">
 					<div class="passo-card">
 						<div class="passo-icon"><i class="fas fa-check-circle"></i></div>
 						<h3>Responda perguntas rápidas</h3>
 						<p>
-							Complete nosso teste vocacional interativo com perguntas sobre seus interesses,
+							Complete nosso teste quiz interativo com perguntas sobre seus interesses,
 							habilidades e personalidade.
 						</p>
 					</div>
-					<div class="passo-card highlight">
-						<div class="passo-icon"><i class="fas fa-bullseye"></i></div>
-						<h3>Descubra seu perfil vocacional</h3>
-						<p>
-							Nossa IA analisa suas respostas e identifica seu perfil único: Analítico, Criativo,
-							Empreendedor ou Social.
-						</p>
-					</div>
 					<div class="passo-card">
-						<div class="passo-icon"><i class="fas fa-chart-line"></i></div>
-						<h3>Receba sugestões personalizadas</h3>
+						<div class="passo-icon"><i class="fas fa-bullseye"></i></div>
+						<h3>Descubra quais áreas do conhecimento combinam com você</h3>
 						<p>
-							Obtenha recomendações de carreiras, cursos e áreas de estudo que combinam
-							perfeitamente com você.
+							Nossa IA analisa suas respostas e identifica seu perfil único, sugerindo as áreas do
+							conhecimento que mais se alinham com você.
 						</p>
 					</div>
 				</div>
@@ -532,7 +520,7 @@
 				<p class="section-subtitle">
 					Desenvolvida por Howard Gardner, a teoria das Inteligências Múltiplas revolucionou nossa
 					compreensão sobre as capacidades humanas. Gardner propôs que não existe apenas um tipo de
-					inteligência, mas sim múltiplas formas de ser inteligente. Nosso teste vocacional é
+					inteligência, mas sim múltiplas formas de ser inteligente. Nosso quiz é
 					baseado nesta teoria científica para identificar suas habilidades únicas.
 				</p>
 

@@ -4,10 +4,10 @@ namespace Vocanator.Back.Features.GetVocationalTests;
 public class GetVocationalTestsController(GetVocationalTestsService service) : ControllerBase
 {
     /// <summary>
-    /// Testes vocacionais
+    /// Quizzes
     /// </summary>
     /// <remarks>
-    /// Retorna os testes vocacionais.
+    /// Retorna os quizzes.
     /// </remarks>
     [HttpGet("vocational-tests")]
     public async Task<IActionResult> Get()

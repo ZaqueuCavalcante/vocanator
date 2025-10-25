@@ -44,14 +44,14 @@ public static class DbSeeder
 
         var areas = new List<KnowledgeArea>
         {
-            new(01, "Ciências Exatas e da Terra"),
-            new(02, "Ciências Biológicas"),
-            new(03, "Ciências da Saúde"),
-            new(04, "Ciências Humanas"),
-            new(05, "Ciências Sociais Aplicadas"),
-            new(06, "Ciências Agrárias"),
+            new(01, "Exatas"),
+            new(02, "Biológicas"),
+            new(03, "Saúde"),
+            new(04, "Humanas"),
+            new(05, "Ciências Sociais"),
+            new(06, "Agrociências"),
             new(07, "Engenharias"),
-            new(08, "Linguística, Letras e Artes"),
+            new(08, "Linguagem e Artes"),
         };
 
         var weights = new List<QuestionKnowledgeAreaWeight>

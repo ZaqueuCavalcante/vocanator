@@ -4,10 +4,10 @@ namespace Vocanator.Back.Features.CreateVocationalTest;
 public class CreateVocationalTestController(CreateVocationalTestService service) : ControllerBase
 {
     /// <summary>
-    /// Teste vocacional
+    /// Quiz
     /// </summary>
     /// <remarks>
-    /// Cria um novo teste vocacional.
+    /// Cria um novo quiz.
     /// </remarks>
     [HttpPost("vocational-tests")]
     public async Task<IActionResult> Create([FromBody] CreateVocationalTestIn data)

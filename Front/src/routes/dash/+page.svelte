@@ -37,7 +37,6 @@
         total = body.total ?? tests.length;
       }
     } catch (err) {
-      console.error('Erro ao carregar testes vocacionais:', err);
       error = (err as Error).message || 'Erro desconhecido';
       tests = [];
       total = 0;
@@ -50,12 +49,12 @@
 </script>
 
 <svelte:head>
-  <meta name="description" content="Listagem de testes vocacionais" />
+  <meta name="description" content="Quizzes" />
 </svelte:head>
 
 <main class="page">
   <header class="header">
-    <h1>{total} Testes Vocacionais</h1>
+    <h1>{total} Quizzes</h1>
     <div class="meta">
       <button class="btn-refresh" on:click={loadQuestions} aria-label="Recarregar lista" disabled={isLoadingData}>
         ⟳ Atualizar

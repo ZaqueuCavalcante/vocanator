@@ -306,7 +306,7 @@
 
 	.plus-one {
 		position: fixed;
-		color: #ff3e3e;
+		color: #007bff;
 		font-size: 1.5em;
 		font-weight: bold;
 		pointer-events: none;

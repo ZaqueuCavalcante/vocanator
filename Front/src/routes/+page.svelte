@@ -177,6 +177,8 @@
 	}
 </script>
 
+//A partir deste ponto está todo o css utilizado nas páginas
+
 <style>
 	* {
 		box-sizing: border-box;
@@ -886,14 +888,18 @@
 	}
 </style>
 
-{#if pageState === 'home'}
+//Aqui se encerra o css da página
+
+//A partir daqui é feito a navegação entre todas as páginas,seguindo um modelo de if/else para identifcar a página e progresso que o usuáriio se encotra
+
+{#if pageState === 'home'} //Aqui é o inicio da página home,que possui um modal de cadastro,que após ser feito some da tela
 	{#if modalVisible}
 		<div class="modal-overlay" id="modal-cadastro">
 			<div class="modal-content">
 				<h2>Bem-vindo!</h2>
 				<p>Cadastre-se para descobrir sua vocação e salvar seu progresso.</p>
 				<form on:submit|preventDefault={handleRegistration}>
-					<div class="form-grupo">
+					<div class="form-grupo"> //Aqui se inicia o modal de cadastro
 						<label for="nome">Seu Nome</label>
 						<input
 							type="text"
@@ -916,10 +922,10 @@
 					<button type="submit" class="btn btn-principal">Cadastrar e Iniciar</button>
 				</form>
 			</div>
-		</div>
+		</div> //Aqui termina a tela home e o modal de casdastro
 	{/if}
 
-	<div id="pagina-principal">
+	<div id="pagina-principal"> //Aqui começa a página principal,que é dividida em seções
 		<header class="navbar">
 			<a href="#" class="logo">Vocanator</a>
 			<a href="#" class="perfil-link" id="perfil-link">
@@ -945,7 +951,7 @@
 				</button>
 			</section>
 
-			<section class="como-funciona-section">
+			<section class="como-funciona-section"> //Aqui é a seção de "como funciona" 
 				<h2>Como funciona</h2>
 				<p class="section-subtitle">Três passos simples para descobrir sua vocação profissional</p>
 				<div class="passos-container">
@@ -976,7 +982,7 @@
 				</div>
 			</section>
 
-			<section class="inteligencias-section">
+			<section class="inteligencias-section"> //Aqui é a seção de inteligências múltiplas
 				<h2>Teoria das Inteligências Múltiplas</h2>
 				<p class="section-subtitle">
 					Desenvolvida por Howard Gardner, a teoria das Inteligências Múltiplas revolucionou nossa
@@ -999,7 +1005,7 @@
 			</section>
 		</main>
 
-		<footer class="footer">
+		<footer class="footer"> //Aqui se incia o nosso footer
 			<div class="footer-container">
 				<div class="footer-col">
 					<h6>Vocanator</h6>
@@ -1021,9 +1027,9 @@
 				</div>
 			</div>
 			<div class="copyright">© 2025 Vocanator. Todos os direitos reservados.</div>
-		</footer>
+		</footer> //Aqui termina o footer
 	</div>
-	{:else if pageState === 'quiz'}
+	{:else if pageState === 'quiz'} //Aqui se incia a tela do quiz
 	<div class="quiz-page-container">
 		<div class="quiz-container" id="quiz-container">
 			{#if questions.length > 0 && currentQuestion}
@@ -1051,15 +1057,15 @@
 								<span class="option-text">{option.texto}</span>
 							</label>
 						{/each}
-					</div>
+					</div> //Aqui finaliza a tela do quiz
 
-					<div class="navigation-buttons">
+					<div class="navigation-buttons"> //A partir daqui temos os botões de navegção do quiz
 						<button
 							class="btn btn-outline"
 							id="btn-anterior"
 							on:click={handleQuizPrevious}
 							disabled={currentQuestionIndex === 0}
-						>
+						> //Este botão retorna para a pergunta anterior
 							<i class="fas fa-arrow-left"></i>
 							Anterior
 						</button>
@@ -1068,7 +1074,7 @@
 							id="btn-proxima"
 							on:click={handleQuizNext}
 							disabled={!currentAnswer}
-						>
+						> //Este botão avança para a próxima pergunta ou finaliza o quiz
 							{#if currentQuestionIndex === questions.length - 1}
 								Finalizar
 								<i class="fas fa-check"></i>
@@ -1080,7 +1086,7 @@
 					</div>
 				</div>
 
-				<div class="dica-box">
+				<div class="dica-box"> //Aqui temos uma dica que é exibida para o usuário
 					<strong>Dica:</strong> Responda com sinceridade! Não há respostas certas ou erradas. O
 					objetivo é descobrir o que realmente combina com você.
 				</div>
@@ -1092,7 +1098,7 @@
 			{/if}
 		</div>
 	</div>
-	{:else if pageState === 'perfil'}
+	{:else if pageState === 'perfil'} //Aqui se inicia a tela de perfil
 	<div class="perfil-page-container">
 		{#if isLoadingProfile}
 			<div class="loading-container">
@@ -1108,10 +1114,10 @@
 						<h2>{user.name || 'João da Silva'}</h2>
 						<p>{user.email || 'joao.silva@email.com'}</p>
 					</div>
-				</div>
+				</div> //Aqui se finaliza a tela de perfil
 			</header>
 
-			<div class="cards-meio">
+			<div class="cards-meio"> //Aqui temos o que é exibido para o usuário após concluir o quiz
 				<section class="perfil-card">
 					<div class="card-header">
 						<i class="fas fa-user-check icon"></i>

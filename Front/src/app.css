@@ -20,7 +20,6 @@ body {
 }
 
 body {
-	padding: 2rem;
 	font-family: 'Poppins', sans-serif;
 	color: var(--txt-1);
 	background-color: var(--bg-1);

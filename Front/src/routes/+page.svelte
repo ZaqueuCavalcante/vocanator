@@ -4,85 +4,31 @@
 
 	// --- ESTADO GLOBAL DA PÁGINA ---
 	let pageState = $state<'home' | 'quiz' | 'perfil'>('home');
-	let modalVisible = $state(true);
+	let modalVisible = $state(false);
 
 	// --- DADOS DO USUÁRIO ---
 	let user = $state({ name: '', email: '' });
 	let userNameInput = $state('');
 	let userEmailInput = $state('');
 
-	// --- DADOS DA API (APENAS ÁREAS) ---
+	// --- DADOS DA API ---
 	let areas = $state<any[]>([]);
+	let questions = $state<any[]>([]); // <<< Será preenchido pela API
 
-	// --- DADOS ESTÁTICOS DO QUIZ ---
-	const quizQuestions = [
-		{
-			text: 'Você gosta de resolver quebra-cabeças ou problemas lógicos?',
-			badge: 'Interesses',
-			intelligence: 'logico'
-		},
-		{
-			text: 'Você se sente à vontade apresentando ideias para um grupo?',
-			badge: 'Comportamento',
-			intelligence: 'linguistico'
-		},
-		{
-			text: 'Você prefere garantir que todos no grupo estejam felizes e trabalhando juntos?',
-			badge: 'Comportamento',
-			intelligence: 'interpessoal'
-		},
-		{
-			text: 'Você gosta de construir protótipos ou modelos físicos?',
-			badge: 'Comportamento',
-			intelligence: 'corporal'
-		},
-		{
-			text: 'Um laboratório de pesquisa silencioso parece um bom lugar para trabalhar?',
-			badge: 'Ambiente',
-			intelligence: 'intrapessoal'
-		},
-		{
-			text: 'Você se sente atraído por design, arquitetura e artes visuais?',
-			badge: 'Ambiente',
-			intelligence: 'espacial'
-		},
-		{
-			text: 'Você prefere trabalhar ao ar livre, em contato com a natureza?',
-			badge: 'Ambiente',
-			intelligence: 'naturalista'
-		},
-		{
-			text: 'Você consegue perceber facilmente se uma nota musical está desafinada?',
-			badge: 'Habilidade',
-			intelligence: 'musical'
-		},
-		{
-			text: 'Você aprende melhor lendo e escrevendo anotações?',
-			badge: 'Aprendizado',
-			intelligence: 'linguistico'
-		},
-		{
-			text: 'Você aprende melhor "colocando a mão na massa" e fazendo na prática?',
-			badge: 'Aprendizado',
-			intelligence: 'corporal'
-		}
-	];
-	
-	// --- OPÇÕES ATUALIZADAS PARA SIM/NÃO ---
+	// --- OPÇÕES ESTÁTICAS DO QUIZ ---
 	const quizOptions = [
-		{ texto: 'Sim', valor: 5 }, // Pontuação alta para "Sim"
-		{ texto: 'Não', valor: 1 }  // Pontuação baixa para "Não"
+		{ texto: 'Sim', valor: true },
+		{ texto: 'Não', valor: false }
 	];
 
 	// --- ESTADO DO QUIZ ---
-	let questions = $state(quizQuestions);
 	let currentQuestionIndex = $state(0);
-	let answers = $state<Record<number, number>>({}); // Armazena a pontuação (5 ou 1)
+	let answers = $state<Record<number, boolean>>({}); // Armazena true/false
 	let isLoadingProfile = $state(false);
 	let profileData = $state<any>(null);
 
 	// --- DADOS COMPUTADOS (DERIVED) ---
-	let currentQuestion = $derived(questions[currentQuestionIndex]);
+	let currentQuestion = $derived(questions[currentQuestionIndex]); // <<< Depende da API
 	let currentAnswer = $derived(answers[currentQuestionIndex]);
 	let quizProgress = $derived(
 		questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
@@ -124,7 +70,7 @@
 		}
 	};
 
-	// --- CARREGAMENTO DE DADOS ---
+	// --- CARREGAMENTO DE DADOS (COM FETCH DE PERGUNTAS) ---
 	async function loadData() {
 		try {
 			const resAreas = await fetch(`${PUBLIC_API_URL}/knowledge-areas`);
@@ -134,9 +80,25 @@
 					...area,
 					...areaDetailsMap[area.name]
 				}));
+			} else {
+				console.error('Falha ao carregar áreas:', resAreas.statusText);
+			}
+
+			// <<< REATIVADO FETCH DE PERGUNTAS >>>
+			const resQuestions = await fetch(`${PUBLIC_API_URL}/questions`);
+			if (resQuestions.ok) {
+				questions = await resQuestions.json();
+				// Certifique-se que sua API retorna um array de objetos
+				// com pelo menos uma propriedade 'id' (número) e 'text' (string)
+				// Ex: [{ id: 1, text: "Pergunta 1?" }, { id: 2, text: "Pergunta 2?" }]
+				console.log('Perguntas carregadas:', questions);
+			} else {
+				console.error('Falha ao carregar perguntas:', resQuestions.statusText);
+				questions = []; // Garante que não dê erro se a API falhar
 			}
 		} catch (error) {
 			console.error('Falha ao carregar dados:', error);
+			questions = []; // Garante que não dê erro se a API falhar
 		}
 	}
 
@@ -148,6 +110,7 @@
 		user.name = userNameInput;
 		user.email = userEmailInput;
 		modalVisible = false;
+		startQuiz();
 	}
 
 	function startQuiz() {
@@ -156,7 +119,7 @@
 		answers = {};
 	}
 
-	function selectAnswer(value: number) {
+	function selectAnswer(value: boolean) {
 		answers[currentQuestionIndex] = value;
 	}
 
@@ -178,19 +141,23 @@
 		isLoadingProfile = true;
 		pageState = 'perfil';
 
-		const quizPayload = questions.map((question, index) => ({
-			question: question.text,
-			intelligence: question.intelligence,
-			score: answers[index] || 1 // Envia a pontuação (5 ou 1)
-		}));
+		// Constrói o payload usando os IDs das perguntas carregadas da API
+		const payload = {
+			Name: user.name,
+			Email: user.email,
+			Responses: questions.map((question, index) => ({
+				QuestionId: question.id, // <<< USA O ID DA PERGUNTA DA API
+				Yes: answers[index] ?? false
+			}))
+		};
 
-		console.log('Enviando para o backend:', quizPayload);
+		console.log('Enviando para o backend (formato C#):', payload);
 
-		// TODO: Implementar chamada real ao backend com o 'quizPayload'
-		// const res = await fetch(`${PUBLIC_API_URL}/api/analyze-quiz`, {
+		// TODO: Implementar chamada real ao backend com o 'payload'
+		// const res = await fetch(`${PUBLIC_API_URL}/api/analyze-quiz`, { // << Endpoint pode precisar mudar
 		//     method: 'POST',
 		//     headers: { 'Content-Type': 'application/json' },
-		//     body: JSON.stringify(quizPayload)
+		//     body: JSON.stringify(payload)
 		// });
 		// if (!res.ok) { ... }
 		// profileData = await res.json();
@@ -937,7 +904,6 @@
 		}
 	}
 </style>
-
 {#if pageState === 'home'}
 	{#if modalVisible}
 		<div class="modal-overlay" id="modal-cadastro">
@@ -970,7 +936,6 @@
 			</div>
 		</div>
 	{/if}
-
 	<div id="pagina-principal">
 		<header class="navbar">
 			<a href="#" class="logo">Vocanator</a>
@@ -991,7 +956,7 @@
 					Use inteligência artificial e testes gamificados para descobrir suas habilidades, interesses e
 					o caminho profissional perfeito para você.
 				</p>
-				<button class="btn btn-principal" on:click={startQuiz}>
+				<button class="btn btn-principal" on:click={() => (modalVisible = true)}>
 					Comece agora
 					<i class="fas fa-arrow-right"></i>
 				</button>
@@ -1060,7 +1025,7 @@
 				<div class="footer-col">
 					<h6>Plataforma</h6>
 					<ul>
-						<li><a href="#" on:click={startQuiz}>Fazer teste</a></li>
+						<li><a href="#" on:click={() => (modalVisible = true)}>Fazer teste</a></li>
 						<li><a href="#">Meu Perfil</a></li>
 					</ul>
 				</div>
@@ -1074,7 +1039,7 @@
 			</div>
 			<div class="copyright">© 2025 Vocanator. Todos os direitos reservados.</div>
 		</footer>
-	</div>
+		</div>
 	{:else if pageState === 'quiz'}
 	<div class="quiz-page-container">
 		<div class="quiz-container" id="quiz-container">
@@ -1104,7 +1069,6 @@
 							</label>
 						{/each}
 					</div>
-
 					<div class="navigation-buttons">
 						<button
 							class="btn btn-outline"
@@ -1119,7 +1083,7 @@
 							class="btn btn-principal"
 							id="btn-proxima"
 							on:click={handleQuizNext}
-							disabled={!currentAnswer}
+							disabled={currentAnswer === undefined}
 						>
 							{#if currentQuestionIndex === questions.length - 1}
 								Finalizar
@@ -1162,7 +1126,6 @@
 					</div>
 				</div>
 			</header>
-
 			<div class="cards-meio">
 				<section class="perfil-card">
 					<div class="card-header">

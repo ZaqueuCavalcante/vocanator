@@ -357,8 +357,54 @@
 	.progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9em; font-weight: 600; }
 	#pergunta-atual { color: #333; }
 	#porcentagem-completa { color: #007bff; }
-	.progress-bar-container { width: 100%; height: 8px; background-color: #e0e0e0; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
-	.progress-bar-fill { width: 10%; height: 100%; background-color: #007bff; border-radius: 4px; transition: width 0.4s ease; }
+	
+
+	
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.start-icon, .end-icon {
+  font-size: 1.5em;
+  color: #ffcc00; /* dourado */
+}
+
+.progress-bar-track {
+  flex-grow: 1;
+  height: 24px; /* altura maior para parecer barra de XP */
+  background-color: #ccc; /* cor do fundo da barra */
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00aaff, #007bff); /* gradiente azul */
+  border-radius: 12px 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.4s ease;
+  position: relative;
+}
+
+.progress-percentage {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9em;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+	
+
+	
 	.quiz-card { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
 	.quiz-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; background-color: #e6f2ff; color: #007bff; font-size: 0.9em; font-weight: 600; margin-bottom: 15px; }
 	.quiz-card h2 { font-size: 1.6em; font-weight: 700; color: #222; margin-bottom: 25px; }
@@ -500,7 +546,16 @@
 							bind:value={userEmailInput}
 						/>
 					</div>
-					<button type="submit" class="btn btn-principal">Cadastrar e Iniciar</button>
+					<button type="submit"
+					                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 8px;
+                                text-align: center;
+                            "
+					
+					class="btn btn-principal">Cadastrar e Iniciar</button>
 				</form>
 			</div>
 		</div>
@@ -610,11 +665,14 @@
 					<h2>Carregando perguntas...</h2>
 				</div>
 			{:else if questions.length > 0 && currentQuestion}
-				<div class="progress-header">
-					<span id="porcentagem-completa">{Math.round(quizProgress)}% completo</span>
-				</div>
 				<div class="progress-bar-container">
-					<div class="progress-bar-fill" id="progress-bar-fill" style="width: {quizProgress}%"></div>
+					<div class="progress-bar-track">
+						<div class="progress-bar-fill" style="width: {quizProgress}%;">
+						<span class="progress-percentage">{Math.round(quizProgress)}%</span>
+						</div>
+					</div>
+
+					<i class="fas fa-trophy end-icon"></i> <!-- ícone final/premio -->
 				</div>
 
 				<div class="quiz-card">

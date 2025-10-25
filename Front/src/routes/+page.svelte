@@ -4,7 +4,7 @@
 
 	// --- ESTADO GLOBAL DA PÁGINA ---
 	let pageState = $state<'home' | 'quiz' | 'perfil'>('home');
-	let modalVisible = $state(true);
+	let modalVisible = $state(false); // Modal começa escondido
 
 	// --- DADOS DO USUÁRIO ---
 	let user = $state({ name: '', email: '' });
@@ -67,17 +67,16 @@
 			intelligence: 'corporal'
 		}
 	];
-	
-	// --- OPÇÕES ATUALIZADAS PARA SIM/NÃO ---
+
 	const quizOptions = [
-		{ texto: 'Sim', valor: 5 }, // Pontuação alta para "Sim"
-		{ texto: 'Não', valor: 1 }  // Pontuação baixa para "Não"
+		{ texto: 'Sim', valor: 5 },
+		{ texto: 'Não', valor: 1 }
 	];
 
 	// --- ESTADO DO QUIZ ---
 	let questions = $state(quizQuestions);
 	let currentQuestionIndex = $state(0);
-	let answers = $state<Record<number, number>>({}); // Armazena a pontuação (5 ou 1)
+	let answers = $state<Record<number, number>>({});
 	let isLoadingProfile = $state(false);
 	let profileData = $state<any>(null);
 
@@ -148,6 +147,9 @@
 		user.name = userNameInput;
 		user.email = userEmailInput;
 		modalVisible = false;
+
+		// Inicia o quiz APÓS o cadastro
+		startQuiz();
 	}
 
 	function startQuiz() {
@@ -181,7 +183,7 @@
 		const quizPayload = questions.map((question, index) => ({
 			question: question.text,
 			intelligence: question.intelligence,
-			score: answers[index] || 1 // Envia a pontuação (5 ou 1)
+			score: answers[index] || 1
 		}));
 
 		console.log('Enviando para o backend:', quizPayload);
@@ -937,7 +939,6 @@
 		}
 	}
 </style>
-
 {#if pageState === 'home'}
 	{#if modalVisible}
 		<div class="modal-overlay" id="modal-cadastro">
@@ -970,7 +971,6 @@
 			</div>
 		</div>
 	{/if}
-
 	<div id="pagina-principal">
 		<header class="navbar">
 			<a href="#" class="logo">Vocanator</a>
@@ -991,7 +991,7 @@
 					Use inteligência artificial e testes gamificados para descobrir suas habilidades, interesses e
 					o caminho profissional perfeito para você.
 				</p>
-				<button class="btn btn-principal" on:click={startQuiz}>
+				<button class="btn btn-principal" on:click={() => (modalVisible = true)}>
 					Comece agora
 					<i class="fas fa-arrow-right"></i>
 				</button>
@@ -1060,7 +1060,7 @@
 				<div class="footer-col">
 					<h6>Plataforma</h6>
 					<ul>
-						<li><a href="#" on:click={startQuiz}>Fazer teste</a></li>
+						<li><a href="#" on:click={() => (modalVisible = true)}>Fazer teste</a></li>
 						<li><a href="#">Meu Perfil</a></li>
 					</ul>
 				</div>
@@ -1074,7 +1074,7 @@
 			</div>
 			<div class="copyright">© 2025 Vocanator. Todos os direitos reservados.</div>
 		</footer>
-	</div>
+		</div>
 	{:else if pageState === 'quiz'}
 	<div class="quiz-page-container">
 		<div class="quiz-container" id="quiz-container">
@@ -1104,7 +1104,6 @@
 							</label>
 						{/each}
 					</div>
-
 					<div class="navigation-buttons">
 						<button
 							class="btn btn-outline"
@@ -1162,7 +1161,6 @@
 					</div>
 				</div>
 			</header>
-
 			<div class="cards-meio">
 				<section class="perfil-card">
 					<div class="card-header">

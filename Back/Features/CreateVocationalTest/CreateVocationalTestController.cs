@@ -10,9 +10,9 @@ public class CreateVocationalTestController(CreateVocationalTestService service)
     /// Cria um novo teste vocacional.
     /// </remarks>
     [HttpPost("vocational-tests")]
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create([FromBody] CreateVocationalTestIn data)
     {
-        var users = await service.Create();
-        return Ok(users);
+        var result = await service.Create(data);
+        return Ok(result);
     }
 }

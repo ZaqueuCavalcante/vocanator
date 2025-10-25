@@ -95,6 +95,14 @@
 	};
 	const defaultRankingDetails = { icon: 'fas fa-star', description: 'Área promissora baseada em seu perfil.' };
 
+	function shuffleArray<T>(array: T[]): T[] {
+        const newArray = [...array]; // copia para não alterar o original
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1)); // índice aleatório
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]]; // troca os elementos
+        }
+        return newArray;
+	}
 
 	// --- CARREGAMENTO DE DADOS (APENAS PERGUNTAS) ---
 	async function loadQuestions() {
@@ -103,7 +111,7 @@
 			const resQuestions = await fetch(`${PUBLIC_API_URL}/questions`);
 			if (resQuestions.ok) {
 				let allQuestions = await resQuestions.json();
-				questions = allQuestions.slice(0, 15); // Pega no máximo 15
+				questions = shuffleArray(allQuestions)
 				console.log('Perguntas carregadas (máx 15):', questions);
 			} else {
 				console.error('Falha ao carregar perguntas:', resQuestions.statusText);
@@ -183,6 +191,32 @@
 		try {
 			// --- PASSO 1: FAZ O POST (simulado) ---
 			// TODO: Substituir pela chamada POST real
+            const res = await fetch( `${PUBLIC_API_URL}/vocational-tests`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+                });
+            
+            const result = await res.json();
+
+            let hanking: any = {};
+
+            try {
+                const responseHanking = await fetch(`${PUBLIC_API_URL}/vocational-tests/${result.id}`);
+                if (responseHanking.ok) {
+                    hanking = await responseHanking.json();
+                    console.log('Hanking:', hanking);
+                } else {
+                    console.error('Falha ao carregar perguntas:', responseHanking.statusText);
+                    hanking = {};
+                }
+            } catch (error) {
+                console.error('Falha ao carregar perguntas:', error);
+                hanking = {};
+            } finally {
+                isLoadingData = false;
+            }
+
 			await new Promise(resolve => setTimeout(resolve, 1000));
 			const testId = Date.now();
 			console.log('POST simulado retornou ID:', testId);
@@ -191,15 +225,8 @@
 
 			// --- PASSO 2: FAZ O GET (simulado) ---
 			// TODO: Substituir pela chamada GET real
-			await new Promise(resolve => setTimeout(resolve, 1500));
 			const rankingResult = {
-				hanking: [
-					{ area: "Engenharia e Tecnologia", score: 5 },
-					{ area: "Ciências Exatas", score: 4 },
-					{ area: "Artes e Design", score: 4},
-					{ area: "Ciências Humanas", score: 3 },
-					{ area: "Empreendedorismo", score: 3 }
-				]
+				hanking: hanking.hanking || []
 			};
 			console.log('GET simulado retornou:', rankingResult);
 
@@ -311,8 +338,31 @@
 	.radio-custom::after { content: ''; width: 12px; height: 12px; background-color: #007bff; border-radius: 50%; transform: scale(0); transition: transform 0.2s ease; }
 	.option-card.selected .radio-custom::after { transform: scale(1); }
 	.option-text { font-size: 1em; font-weight: 500; color: #333; }
-	.navigation-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-	.dica-box { background-color: #e6f2ff; border: 1px solid #b3d7ff; border-radius: 10px; padding: 15px; margin-top: 20px; text-align: center; font-size: 0.9em; color: #333; }
+
+    
+    .navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 20px;
+  gap: 10px; /* opcional, espaçamento entre os botões */
+}
+
+/* Quando a tela for menor que 768px (mobile) */
+@media (max-width: 768px) {
+  .navigation-buttons {
+    flex-direction: column; /* empilha os botões */
+    align-items: stretch;   /* faz cada botão ocupar toda a largura */
+  }
+
+  .navigation-buttons button {
+    width: 100%; /* cada botão ocupa toda a linha */
+  }
+}
+    
+    .dica-box { background-color: #e6f2ff; border: 1px solid #b3d7ff; border-radius: 10px; padding: 15px; margin-top: 20px; text-align: center; font-size: 0.9em; color: #333; }
 	.dica-box strong { color: #0056b3; }
 
 	/* --- Perfil Page (Resultados) --- */
@@ -566,6 +616,13 @@
 						<button
 							class="btn btn-outline"
 							id="btn-anterior"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 8px;
+                                text-align: center;
+                            "
 							on:click={handleQuizPrevious}
 							disabled={currentQuestionIndex === 0}
 						>
@@ -575,6 +632,13 @@
 						<button
 							class="btn btn-principal"
 							id="btn-proxima"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 8px;
+                                text-align: center;
+                            "
 							on:click={handleQuizNext}
 							disabled={currentAnswer === undefined}
 						>
